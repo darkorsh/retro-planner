@@ -416,7 +416,7 @@ function updateAuthModeUI() {
     if (authModalTitleEl) authModalTitleEl.textContent = "Регистрация";
     if (authModalSubtitleEl)
       authModalSubtitleEl.textContent =
-        "Создадим новый профиль планера. Одного на все твои всратые планы.";
+        "Создадим новый профиль для классной девчонки или парня.";
   }
 }
 

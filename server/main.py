@@ -168,6 +168,13 @@ def make_title(text: str) -> str:
     words = text.strip().split()
     return " ".join(words[:5]) if words else "Без названия"
 
+def to_public_user(user: UserORM) -> UserPublic:
+    return UserPublic(
+        id=user.id,
+        email=user.email,
+        name=user.name,
+        created_at=user.created_at,
+    )
 
 def hash_password(password: str) -> str:
     """
@@ -329,7 +336,8 @@ def register_user(payload: UserCreate, db: Session = Depends(get_db)):
     db.refresh(user)
 
     token = create_session(db, user.id)
-    return AuthToken(token=token, user=user)
+    public_user = to_public_user(user)
+    return AuthToken(token=token, user=public_user)
 
 
 @app.post("/auth/login", response_model=AuthToken)
@@ -341,7 +349,9 @@ def login_user(payload: UserLogin, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Неверный email или пароль")
 
     token = create_session(db, user.id)
-    return AuthToken(token=token, user=user)
+    public_user = to_public_user(user)
+    return AuthToken(token=token, user=public_user)
+
 
 
 @app.post("/auth/logout", status_code=204)

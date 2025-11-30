@@ -1,85 +1,90 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-from pydantic import BaseModel
-from typing import List, Optional
-from pathlib import Path
+import os
 import json
 import uuid
-from datetime import datetime
+from pathlib import Path
+from typing import List, Optional
 
-BASE_DIR = Path(__file__).resolve().parent
-STATIC_DIR = BASE_DIR / "static"
-TASKS_FILE = BASE_DIR / "tasks.json"
-
-app = FastAPI(title="Retro Planner API + Frontend")
-
-# ---------- CORS (по факту почти не нужен, но пусть будет) ----------
-origins = [
-    "http://127.0.0.1:8000",
-    "http://localhost:8000",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+from sqlalchemy import (
+    create_engine,
+    Column,
+    String,
+    Boolean,
+    Text,
 )
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session
 
-# ---------- Статика и главная страница ----------
+# =========================
+#   НАСТРОЙКА БАЗЫ
+# =========================
 
-# /static/* -> отдаем файлы (css, js и т.д.)
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+# Если DATABASE_URL не задана -> локально используем SQLite файл tasks.db
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL:
+    # Render / PostgreSQL
+    connect_args = {}
+else:
+    # Локальный fallback: SQLite
+    DATABASE_URL = "sqlite:///./tasks.db"
+    connect_args = {"check_same_thread": False}
+
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
 
 
-@app.get("/", response_class=FileResponse)
-async def serve_index():
-    """Главная страница планера."""
-    return FileResponse(STATIC_DIR / "index.html")
+class TaskORM(Base):
+    __tablename__ = "tasks"
+
+    # id остаётся строкой, как и раньше
+    id = Column(String, primary_key=True, index=True)
+    text = Column(Text, nullable=False)
+    title = Column(String, nullable=False)
+    category = Column(String, nullable=False)
+    project = Column(String, nullable=False, default="")
+    # дату храним как строку "YYYY-MM-DD" или None
+    date = Column(String, nullable=True)
+    done = Column(Boolean, nullable=False, default=False)
+    # createdAt тоже как строку ISO
+    createdAt = Column(String, nullable=False)
 
 
-# ---------- Работа с файлом задач ----------
-
-def load_tasks_from_file() -> List[dict]:
-    if not TASKS_FILE.exists():
-        return []
+def get_db() -> Session:
+    db = SessionLocal()
     try:
-        raw = TASKS_FILE.read_text(encoding="utf-8").strip()
-        if not raw:
-            return []
-        return json.loads(raw)
-    except Exception:
-        # если tasks.json битый, не валим приложение
-        return []
+        yield db
+    finally:
+        db.close()
 
 
-def save_tasks_to_file(tasks: List[dict]) -> None:
-    TASKS_FILE.write_text(
-        json.dumps(tasks, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
+# =========================
+#   МОДЕЛИ ДЛЯ API
+# =========================
 
-
-# ---------- Модели ----------
 
 class Task(BaseModel):
     id: str
     text: str
     title: str
-    category: str           # "work" | "personal"
-    project: str            # "" или название проекта
-    date: Optional[str]     # "YYYY-MM-DD" или None
+    category: str
+    project: str
+    date: Optional[str] = None  # "YYYY-MM-DD" или None
     done: bool
     createdAt: str
+
+    class Config:
+        orm_mode = True
 
 
 class TaskCreate(BaseModel):
     text: str
     category: str
-    project: Optional[str] = ""
+    project: str
     date: Optional[str] = None
 
 
@@ -91,71 +96,160 @@ class TaskPatch(BaseModel):
     done: Optional[bool] = None
 
 
-# ---------- CRUD ----------
+# =========================
+#   УТИЛИТЫ
+# =========================
+
+
+def generate_id() -> str:
+    return str(uuid.uuid4())
+
+
+def make_title(text: str) -> str:
+    # Берём первые 5 слов описания
+    words = text.strip().split()
+    return " ".join(words[:5]) if words else "Без названия"
+
+
+# Путь до старого файла с задачами (если он есть)
+TASKS_FILE = Path(__file__).parent / "tasks.json"
+
+
+def migrate_from_file_if_needed():
+    # если база уже есть — мигрировать не нужно
+    if os.path.exists("tasks.db"):
+        return
+
+    if not os.path.exists("tasks.json"):
+        return
+
+    print("⏳ Мигрируем задачи из tasks.json в SQLite...")
+
+    with open("tasks.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # data может быть либо словарём {"tasks": [...]}, либо просто списком [...]
+    if isinstance(data, list):
+        tasks = data
+    elif isinstance(data, dict):
+        tasks = data.get("tasks") or []
+    else:
+        tasks = []
+
+    # дальше оставь как было — вставка задач в БД
+    with SessionLocal() as db:
+        for t in tasks:
+            task = TaskModel(
+                id=t.get("id"),
+                text=t.get("text", ""),
+                title=t.get("title", ""),
+                category=t.get("category") or "work",
+                project=t.get("project") or "",
+                date=t.get("date"),
+                done=t.get("done", False),
+                created_at=t.get("createdAt") or t.get("created_at"),
+            )
+            db.add(task)
+        db.commit()
+
+    print("✅ Миграция завершена.")
+
+
+# =========================
+#   FASTAPI ПРИЛОЖЕНИЕ
+# =========================
+
+app = FastAPI()
+
+# CORS — оставим максимально открытым, планер свой
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Статика: index.html, main.js, style.css лежат в server/static
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
+
+@app.on_event("startup")
+def on_startup():
+    migrate_from_file_if_needed()
+
+
+# =========================
+#   ЭНДПОИНТЫ /TASKS
+# =========================
+
 
 @app.get("/tasks", response_model=List[Task])
-def get_tasks():
-    return load_tasks_from_file()
+def get_tasks(db: Session = Depends(get_db)):
+    tasks = db.query(TaskORM).order_by(TaskORM.createdAt).all()
+    return tasks
 
 
 @app.post("/tasks", response_model=Task)
-def create_task(payload: TaskCreate):
-    tasks = load_tasks_from_file()
+def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
+    text = payload.text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Текст задачи не может быть пустым")
 
-    clean_text = payload.text.strip()
-    if not clean_text:
-        raise HTTPException(status_code=400, detail="Text is required")
+    from datetime import datetime
 
-    words = clean_text.split()
-    title = " ".join(words[:5])
-
-    task = {
-        "id": str(uuid.uuid4()),
-        "text": clean_text,
-        "title": title,
-        "category": payload.category,
-        "project": payload.project or "",
-        "date": payload.date or None,
-        "done": False,
-        "createdAt": datetime.utcnow().isoformat(),
-    }
-
-    tasks.insert(0, task)
-    save_tasks_to_file(tasks)
-
+    task = TaskORM(
+        id=generate_id(),
+        text=text,
+        title=make_title(text),
+        category=payload.category or "work",
+        project=payload.project or "",
+        date=payload.date,
+        done=False,
+        createdAt=datetime.utcnow().isoformat(),
+    )
+    db.add(task)
+    db.commit()
+    db.refresh(task)
     return task
 
 
 @app.patch("/tasks/{task_id}", response_model=Task)
-def update_task(task_id: str, patch: TaskPatch):
-    tasks = load_tasks_from_file()
-    for t in tasks:
-        if t["id"] == task_id:
-            if patch.text is not None:
-                t["text"] = patch.text
-                words = patch.text.strip().split()
-                if words:
-                    t["title"] = " ".join(words[:5])
-            if patch.category is not None:
-                t["category"] = patch.category
-            if patch.project is not None:
-                t["project"] = patch.project
-            if patch.date is not None:
-                t["date"] = patch.date
-            if patch.done is not None:
-                t["done"] = patch.done
+def update_task(task_id: str, patch: TaskPatch, db: Session = Depends(get_db)):
+    task: TaskORM = db.query(TaskORM).filter(TaskORM.id == task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Задача не найдена")
 
-            save_tasks_to_file(tasks)
-            return t
+    if patch.text is not None:
+        task.text = patch.text
+        # если меняем текст, имеет смысл обновить и title,
+        # если ты хочешь — можно убрать это поведение
+        task.title = make_title(patch.text)
 
-    raise HTTPException(status_code=404, detail="Task not found")
+    if patch.category is not None:
+        task.category = patch.category
+
+    if patch.project is not None:
+        task.project = patch.project
+
+    if patch.date is not None:
+        task.date = patch.date
+
+    if patch.done is not None:
+        task.done = patch.done
+
+    db.commit()
+    db.refresh(task)
+    return task
 
 
 @app.delete("/tasks/{task_id}", status_code=204)
-def delete_task(task_id: str):
-    tasks = load_tasks_from_file()
-    new_tasks = [t for t in tasks if t["id"] != task_id]
-    if len(new_tasks) == len(tasks):
-        raise HTTPException(status_code=404, detail="Task not found")
-    save_tasks_to_file(new_tasks)
+def delete_task(task_id: str, db: Session = Depends(get_db)):
+    task: TaskORM = db.query(TaskORM).filter(TaskORM.id == task_id).first()
+    if not task:
+        # фронту всё равно — 204 или 404, но 404 честнее
+        raise HTTPException(status_code=404, detail="Задача не найдена")
+
+    db.delete(task)
+    db.commit()
     return

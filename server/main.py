@@ -148,7 +148,7 @@ def migrate_from_file_if_needed():
                 date=t.get("date"),
                 done=t.get("done", False),
                 createdAt=t.get("createdAt") or t.get("created_at"),
-                
+
             )
             db.add(task)
         db.commit()
@@ -174,6 +174,10 @@ app.add_middleware(
 
 @app.on_event("startup")
 def on_startup():
+    # 1. Создаём таблицы в БД, если их ещё нет
+    Base.metadata.create_all(bind=engine)
+
+    # 2. Один раз мигрируем из tasks.json в SQLite (если нужно)
     migrate_from_file_if_needed()
 
 

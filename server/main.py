@@ -139,7 +139,7 @@ def migrate_from_file_if_needed():
     # дальше оставь как было — вставка задач в БД
     with SessionLocal() as db:
         for t in tasks:
-            task = TaskModel(
+            task = TaskORM(
                 id=t.get("id"),
                 text=t.get("text", ""),
                 title=t.get("title", ""),
@@ -170,25 +170,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Статика: index.html, main.js, style.css лежат в server/static
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
-
 
 @app.on_event("startup")
 def on_startup():
     migrate_from_file_if_needed()
 
 
-# =========================
-#   ЭНДПОИНТЫ /TASKS
-# =========================
+# =======================
+# ЭНДПОИНТЫ /TASKS
+# =======================
 
+from typing import List  # эта строка у тебя уже должна быть выше, не дублируй
 
 @app.get("/tasks", response_model=List[Task])
 def get_tasks(db: Session = Depends(get_db)):
     tasks = db.query(TaskORM).order_by(TaskORM.createdAt).all()
     return tasks
-
+        
 
 @app.post("/tasks", response_model=Task)
 def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
@@ -253,3 +251,6 @@ def delete_task(task_id: str, db: Session = Depends(get_db)):
     db.delete(task)
     db.commit()
     return
+
+# Статика: index.html, main.js, style.css лежат в server/static
+app.mount("/", StaticFiles(directory="static", html=True), name="static")

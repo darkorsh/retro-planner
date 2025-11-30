@@ -1,0 +1,711 @@
+/* =============== БАЗА / ПЕРЕМЕННЫЕ =============== */
+
+:root {
+  --font-ui: "Press Start 2P", system-ui, sans-serif;
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* фон */
+  --bg-top: #fdf1ff;
+  --bg-bottom: #f5ddff;
+  --grid-line: rgba(255, 255, 255, 0.35);
+
+  /* основные цвета */
+  --clr-violet: #b46dff;
+  --clr-violet-dark: #7a3fd0;
+  --clr-violet-soft: #e2c7ff;
+
+  --clr-pink: #ff7fe5;
+  --clr-pink-dark: #d425a6;
+
+  --clr-pink-soft: #ffe6ff;
+  --clr-pink-softer: #fff3ff;
+
+  --clr-danger: #ff3c7d;
+  --clr-danger-soft: #ffb0cf;
+
+  --clr-text-main: #3b1c5c;
+  --clr-text-soft: #7a4aa4;
+
+  /* кнопки */
+  --btn-radius: 12px;
+  --btn-font-size: 12px;
+  --btn-shadow: 0 3px 0 rgba(0, 0, 0, 0.16);
+
+  --btn-primary-bg: #ff8af0;
+  --btn-primary-bg-hover: #ff6ce7;
+  --btn-primary-border: #d425a6;
+  --btn-primary-shadow: #b21888;
+
+  --btn-secondary-bg: #ffe8ff;
+  --btn-secondary-bg-hover: #f7dcff;
+  --btn-secondary-border: #b46dff;
+  --btn-secondary-shadow: #8b5cf6;
+
+  --btn-danger-bg: #ffb0cf;
+  --btn-danger-bg-hover: #ff9cc3;
+  --btn-danger-border: #ff3c7d;
+  --btn-danger-shadow: #c51f5c;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  color: var(--clr-text-main);
+
+  /* фон: градиент + сетка */
+  background-color: #fbe9ff;
+  background-image:
+    linear-gradient(var(--bg-top), var(--bg-bottom)),
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 100% 100%, 24px 24px, 24px 24px;
+  background-attachment: fixed;
+}
+
+.app {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 20px 40px;
+  position: relative;
+  z-index: 1;
+}
+
+/* =============== ТОПБАР =============== */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 3px solid var(--clr-violet);
+  background: linear-gradient(90deg, #ffc8ff, #f4a8ff);
+  box-shadow: 0 4px 0 var(--clr-violet), 0 10px 20px rgba(115, 58, 160, 0.35);
+}
+
+.topbar__title {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #4c2569;
+}
+
+.topbar__nav {
+  display: flex;
+  gap: 8px;
+}
+
+/* =============== КНОПКИ НАВИГАЦИИ =============== */
+
+.nav-btn {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 2px solid var(--clr-violet);
+  background: #ffe8ff;
+  color: #4b2067;
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--clr-violet);
+  transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.1s ease, border-color 0.1s ease;
+}
+
+.nav-btn:hover {
+  background: #ffd6ff;
+}
+
+.nav-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 var(--clr-violet);
+}
+
+.nav-btn--active {
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-border);
+  box-shadow: 0 2px 0 var(--btn-primary-shadow);
+  color: #2b0f33;
+}
+
+/* =============== ЭКРАНЫ =============== */
+
+.screen {
+  display: none;
+}
+
+.screen--active {
+  display: block;
+}
+
+/* =============== ПАНЕЛИ / ОКНА =============== */
+
+.panel {
+  margin-top: 18px;
+  padding: 18px 18px 22px;
+  border-radius: 12px;
+  border: 3px solid var(--clr-violet-soft);
+  background: var(--clr-pink-softer);
+  box-shadow: 0 4px 0 var(--clr-violet-soft), 0 10px 24px rgba(137, 96, 182, 0.35);
+}
+
+.panel--capture {
+  min-height: 260px;
+}
+
+.panel__title {
+  margin: 0 0 14px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #4b2067;
+}
+
+/* =============== ФОРМА ЗАХВАТА =============== */
+
+.field-label {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin-bottom: 3px;
+  color: var(--clr-text-soft);
+}
+
+.task-body {
+  width: 100%;
+  min-height: 130px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 2px solid var(--clr-violet-soft);
+  background: #ffeaff;
+  color: var(--clr-text-main);
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.task-body:focus {
+  outline: none;
+  border-color: var(--clr-pink);
+  box-shadow: 0 0 0 2px var(--clr-pink);
+}
+
+.hint-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: #8b6bb3;
+}
+
+/* нижняя полоса с параметрами */
+
+.capture-advanced {
+  margin-top: 16px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(135, 88, 189, 0.4);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px 18px;
+  align-items: flex-end;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+/* радиокнопки */
+
+.radio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--clr-text-main);
+}
+
+.radio input[type="radio"] {
+  accent-color: var(--clr-pink);
+}
+
+/* инпуты и селекты */
+
+.select,
+.input-date,
+.input-text,
+.project-add__date {
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 2px solid var(--clr-violet-soft);
+  background: #ffeaff;
+  color: var(--clr-text-main);
+  font-size: 13px;
+}
+
+
+.select:focus,
+.input-date:focus,
+.input-text:focus {
+  outline: none;
+  border-color: var(--clr-pink);
+  box-shadow: 0 0 0 2px var(--clr-pink);
+}
+
+/* датапикер чуть поплотнее */
+
+.input-date,
+.project-add__date {
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+
+/* =============== КНОПКИ (ЕДИНАЯ СИСТЕМА) =============== */
+
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  font-family: var(--font-ui);
+  font-size: var(--btn-font-size);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  padding: 11px 24px;
+  border-radius: var(--btn-radius);
+  border-width: 2px;
+  border-style: solid;
+  cursor: pointer;
+  box-shadow: var(--btn-shadow);
+  transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.1s ease, border-color 0.1s ease;
+}
+
+/* основная */
+
+.btn-primary {
+  margin-left: auto;
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-border);
+  color: #2b0f33;
+  box-shadow: 0 3px 0 var(--btn-primary-shadow);
+}
+
+.btn-primary:hover {
+  background: var(--btn-primary-bg-hover);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 0 var(--btn-primary-shadow);
+}
+
+/* вторичная */
+
+.btn-secondary {
+  background: var(--btn-secondary-bg);
+  border-color: var(--btn-secondary-border);
+  color: var(--clr-text-main);
+  box-shadow: 0 3px 0 var(--btn-secondary-shadow);
+}
+
+.btn-secondary:hover {
+  background: var(--btn-secondary-bg-hover);
+}
+
+.btn-secondary:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 0 var(--btn-secondary-shadow);
+}
+
+/* опасная */
+
+.btn-danger {
+  background: var(--btn-danger-bg);
+  border-color: var(--btn-danger-border);
+  color: #4a0b27;
+  box-shadow: 0 3px 0 var(--btn-danger-shadow);
+}
+
+.btn-danger:hover {
+  background: var(--btn-danger-bg-hover);
+}
+
+.btn-danger:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 0 var(--btn-danger-shadow);
+}
+
+/* =============== СПИСКИ ЗАДАЧ =============== */
+
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 0;
+}
+
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 10px;
+  border: 2px solid var(--clr-violet-soft);
+  background: #fbe6ff;
+}
+
+.task-item:hover {
+  background: #f7ddff;
+}
+
+.task-item__checkbox {
+  margin-top: 4px;
+  accent-color: var(--clr-pink);
+}
+
+.task-item__meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.task-item__title {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.task-item__info {
+  font-size: 12px;
+  color: #6b4f9b;
+}
+
+.task-item--done {
+  opacity: 0.7;
+}
+
+.task-item--done .task-item__title {
+  text-decoration: line-through;
+}
+
+/* =============== ТЕКСТОВЫЕ ПОДПИСИ =============== */
+
+.subtle {
+  font-size: 12px;
+  color: var(--clr-text-soft);
+}
+
+.empty-hint {
+  margin-top: 14px;
+  font-size: 12px;
+  color: #9f7fe0;
+}
+
+/* =============== ФИЛЬТРЫ (ПОТОК) =============== */
+
+.filter-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--clr-text-soft);
+}
+
+.chip {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+
+  border-radius: 999px;
+  border: 2px solid var(--clr-violet);
+  padding: 3px 10px;
+  background: #ffe8ff;
+  cursor: pointer;
+}
+
+.chip--active {
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-border);
+}
+
+/* =============== ПРОЕКТЫ =============== */
+
+.projects-header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.projects-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.project-item {
+  border-radius: 10px;
+  border: 2px solid var(--clr-violet-soft);
+  background: #fcecff;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.project-item__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  background: linear-gradient(90deg, #f8cdfd, #f4c3ff);
+}
+
+.project-item__left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.project-item__name {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.project-item__count {
+  font-size: 12px;
+  color: #6b4f9b;
+}
+
+.project-item__controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.project-item__toggle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--clr-violet);
+  background: #f3d8ff;
+  color: #4a1a6f;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-shadow: 0 2px 0 var(--clr-violet);
+}
+
+.project-item__toggle:hover {
+  background: #eac4ff;
+}
+
+.project-item__delete {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 2px solid var(--clr-danger);
+  background: var(--clr-danger-soft);
+  color: #5c0821;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1;
+  box-shadow: 0 2px 0 var(--btn-danger-shadow);
+}
+
+.project-item__delete:hover {
+  background: #ff9cc3;
+}
+
+.project-item__body {
+  padding: 8px 10px 10px;
+  border-top: 2px solid var(--clr-violet-soft);
+  max-height: 420px;
+  overflow: hidden;
+  opacity: 1;
+  transition:
+    max-height 0.2s ease-out,
+    opacity 0.2s ease-out,
+    padding 0.2s ease-out,
+    border-top-width 0.2s ease-out;
+}
+
+.project-item__body--collapsed {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-top-width: 0;
+  opacity: 0;
+}
+
+.project-task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.project-add {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.project-add__input {
+  flex: 1;
+}
+
+.project-add__date {
+  width: 160px;
+}
+
+.project-add__btn {
+  white-space: nowrap;
+}
+
+/* =============== МОДАЛКА ЗАДАЧИ =============== */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 204, 255, 0.6);
+}
+
+.modal__content {
+  position: relative;
+  max-width: 720px;
+  width: 92%;
+  max-height: 80vh;
+  padding: 18px 20px;
+  border-radius: 12px;
+  border: 3px solid var(--clr-violet-soft);
+  background: var(--clr-pink-softer);
+  box-shadow: 0 6px 0 var(--clr-violet-soft), 0 12px 24px rgba(137, 96, 182, 0.45);
+  color: var(--clr-text-main);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal__title {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.modal__meta {
+  font-size: 12px;
+  color: var(--clr-text-soft);
+}
+
+/* textarea в модалке: авто-высота (JS), без скролла */
+
+.modal__body {
+  width: 100%;
+  margin: 0;
+  margin-top: 4px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 2px solid var(--clr-violet-soft);
+  background: #fff5ff;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  color: #2e123a;
+  box-sizing: border-box;
+  resize: none;
+  overflow: hidden;
+  min-height: 120px;
+}
+
+.modal__close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--clr-violet);
+  background: #ffe8ff;
+  color: #4b2067;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--clr-violet);
+}
+
+.modal__close:hover {
+  background: #ffd6ff;
+}
+
+/* блок с кнопками внизу модалки можно не трогать – классы btn-* уже оформлены */
+
+/* =============== ПРОЧЕЕ =============== */
+
+.task-item__title {
+  cursor: pointer;
+}
+
+/* =============== АДАПТИВ =============== */
+
+@media (max-width: 768px) {
+  .app {
+    padding: 16px 10px 30px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .topbar__nav {
+    flex-wrap: wrap;
+  }
+
+  .capture-advanced {
+    grid-template-columns: 1fr 1fr;
+  }
+}

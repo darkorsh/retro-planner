@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Retro Planner</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar__title">Delishki v0.1</div>
+      <nav class="topbar__nav">
+        <button class="nav-btn nav-btn--active" data-screen="capture">What's up, babe?</button>
+        <button class="nav-btn" data-screen="today">Сегодня</button>
+        <button class="nav-btn" data-screen="stream">Поток</button>
+        <button class="nav-btn" data-screen="projects">Проекты</button>
+        <button class="nav-btn" data-screen="done">Well done!</button>
+      </nav>
+    </header>
+
+    <!-- ЭКРАН 1: ЗАХВАТ ЗАДАЧИ -->
+    <main class="screen screen--active" id="screen-capture">
+      <section class="panel panel--capture">
+        <h1 class="panel__title">What's up, babe?</h1>
+
+        <label class="field-label" for="taskDescription">
+          Место для делишек
+        </label>
+        <textarea
+          id="taskDescription"
+          class="task-body"
+          rows="5"
+          placeholder="Написать Васе про дедлайн, купить овсянку, добить презентацию..."
+        ></textarea>
+
+        <div class="hint-line">
+          <span>Ctrl+Enter — сохранить задачу в поток</span>
+          <span>•</span>
+          <span>По умолчанию: <strong>Рабочее</strong>, без проекта, без даты</span>
+        </div>
+
+        <div class="capture-advanced">
+          <!-- Категория -->
+          <div class="field-group">
+            <span class="field-label">Категория:</span>
+            <label class="radio">
+              <input id="category-work" type="radio" name="task-type" value="work" checked />
+              <span>Рабочее</span>
+            </label>
+            <label class="radio">
+              <input id="category-personal" type="radio" name="task-type" value="personal" />
+              <span>Личное</span>
+            </label>
+          </div>
+
+          <!-- Проект -->
+          <div class="field-group">
+            <label class="field-label" for="projectSelect">Проект:</label>
+            <select id="projectSelect" class="select">
+              <option value="">— без проекта —</option>
+            </select>
+          </div>
+
+          <!-- Дата -->
+          <div class="field-group">
+            <label class="field-label" for="taskDate">Когда делать:</label>
+            <input id="taskDate" type="date" class="input-date" />
+          </div>
+
+          <!-- Кнопка сохранить -->
+          <button id="saveTaskBtn" class="btn-primary">
+            СОХРАНИТЬ
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- ЭКРАН 2: СЕГОДНЯ -->
+<main class="screen" id="screen-today">
+  <section class="panel">
+    <h1 class="panel__title">Сегодня</h1>
+
+    <div class="today-header">
+      <label class="field-label" for="todayFilterDate">ЗАДАЧИ НА ДАТУ:</label>
+      <input type="date" id="todayFilterDate" class="input-date" />
+      <span id="today-date" class="subtle"></span>
+    </div>
+
+    <ul id="todayList" class="task-list"></ul>
+
+    <div class="empty-hint" id="today-empty">
+      На выбранный день ничего не запланировано. Можно спокойно смотреть сериальчик.
+    </div>
+  </section>
+</main>
+
+
+    <!-- ЭКРАН 3: ПОТОК -->
+    <main class="screen" id="screen-stream">
+      <section class="panel">
+        <h1 class="panel__title">Поток задач</h1>
+        <div class="filter-line">
+          <span>Фильтр:</span>
+          <button class="chip chip--active" data-filter="all">Все</button>
+          <button class="chip" data-filter="work">Рабочие</button>
+          <button class="chip" data-filter="personal">Личные</button>
+        </div>
+        <ul id="streamList" class="task-list"></ul>
+        <div class="empty-hint" id="stream-empty">
+          Поток пуст. Либо ты всё сделала, либо забыла записать.
+        </div>
+      </section>
+    </main>
+
+    <!-- ЭКРАН 4: ПРОЕКТЫ -->
+    <main class="screen" id="screen-projects">
+      <section class="panel">
+        <h1 class="panel__title">Проекты</h1>
+        <div class="projects-header">
+          <input id="new-project-name" class="input-text" placeholder="Название проекта" />
+          <button id="add-project-btn" class="btn-secondary">+ Проект</button>
+        </div>
+        <ul id="projectsList" class="projects-list"></ul>
+        <div class="empty-hint" id="projects-empty">
+          Пока нет ни одного проекта. Всё живёт в потоке.
+        </div>
+      </section>
+    </main>
+
+      <!-- ЭКРАН: ВЫПОЛНЕННЫЕ -->
+<main class="screen" id="screen-done">
+  <section class="panel">
+    <h1 class="panel__title">Ты — красотка!</h1>
+    <ul id="doneList" class="task-list"></ul>
+    <div class="empty-hint" id="done-empty">
+      Пока ничего не выполнено. Зато потенциал огромный.
+    </div>
+  </section>
+</main>
+  </div>
+
+    <!-- МОДАЛКА ПРОСМОТРА/РЕДАКТИРОВАНИЯ ЗАДАЧИ -->
+  <div id="taskModal" class="modal hidden">
+    <div class="modal__backdrop"></div>
+    <div class="modal__content">
+      <button class="modal__close" id="taskModalClose">✕</button>
+
+          <h2 class="modal__title" id="taskModalTitle"></h2>
+    <div class="modal__meta" id="taskModalMeta"></div>
+
+    <label class="field-label" for="taskModalTextarea">ТЕКСТ ЗАДАЧИ:</label>
+    <textarea id="taskModalTextarea" class="modal__body"></textarea>
+
+    <label class="field-label" for="taskModalProjectSelect">ПРОЕКТ:</label>
+    <select id="taskModalProjectSelect" class="select">
+      <!-- опции заполним из JS -->
+      <option value="">— без проекта —</option>
+    </select>
+
+    <label class="field-label" for="taskModalDate">КОГДА ДЕЛАТЬ:</label>
+    <input type="date" id="taskModalDate" class="input-date" />
+
+    <div style="margin-top: 10px; display: flex; justify-content: flex-end; gap: 8px;">
+  <button type="button" class="btn-danger" id="taskModalDeleteBtn">УДАЛИТЬ</button>
+  <button type="button" class="btn-secondary" id="taskModalCancelBtn">ОТМЕНА</button>
+  <button type="button" class="btn-primary" id="taskModalSaveBtn">СОХРАНИТЬ</button>
+</div>
+
+
+    </div>
+  </div>
+
+  <script src="/static/main.js"></script>
+
+</body>
+</html>

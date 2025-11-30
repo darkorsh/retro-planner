@@ -1,0 +1,52 @@
+[
+  {
+    "id": "ea1e90ca-f3e5-4d68-89ae-8a0bd38223f4",
+    "text": "что еще",
+    "title": "что еще",
+    "category": "work",
+    "project": "",
+    "date": null,
+    "done": false,
+    "createdAt": "2025-11-30T12:38:09.671006"
+  },
+  {
+    "id": "fd15a52c-3b16-45e6-a097-ce615e61c01b",
+    "text": "задача",
+    "title": "задача",
+    "category": "work",
+    "project": "",
+    "date": null,
+    "done": false,
+    "createdAt": "2025-11-30T12:38:03.167143"
+  },
+  {
+    "text": "задача в новом проекте",
+    "category": "work",
+    "project": "новый проект",
+    "date": "2025-11-30",
+    "id": "5fa8eb0f548e4acc9fed45ed3d00ec43",
+    "title": "задача в новом проекте",
+    "done": false,
+    "createdAt": "2025-11-30T12:36:34.428773"
+  },
+  {
+    "text": "задача в новом проекте",
+    "category": "work",
+    "project": "новый проект",
+    "date": null,
+    "id": "e8f4effa8fa141bf80569401f181eb53",
+    "title": "задача в новом проекте",
+    "done": false,
+    "createdAt": "2025-11-30T12:36:34.428616"
+  },
+  {
+    "text": "проверка связи",
+    "category": "work",
+    "project": "",
+    "date": null,
+    "id": "947c75e614a84fb586ba6c2f3a7d231b",
+    "title": "проверка связи",
+    "done": false,
+    "createdAt": "2025-11-30T12:36:34.423184"
+  }
+]

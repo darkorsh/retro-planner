@@ -69,7 +69,8 @@ let streamFilter = "all"; // all | work | personal
 //          API
 // =======================
 
-const API_BASE = "http://127.0.0.1:8000";
+// один сервер и локально, и на Render
+const API_BASE = "";
 
 async function apiLoadTasks() {
   try {

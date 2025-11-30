@@ -4,28 +4,29 @@
   --font-ui: "Press Start 2P", system-ui, sans-serif;
   --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
-  /* фон */
-  --bg-top: #fdf1ff;
-  --bg-bottom: #f5ddff;
-  --grid-line: rgba(255, 255, 255, 0.35);
+  /* фон (как на рефе) */
+  --bg-top: #ffeaff;
+  --bg-bottom: #f6dcff;
+  --grid-line: rgba(255, 255, 255, 0.32);
 
   /* основные цвета */
-  --clr-ink-main: #2b1036;
+  --clr-ink-main: #2a1240;
   --clr-ink-soft: #7a4aa4;
 
-  --clr-surface-1: #fff3ff;
-  --clr-surface-2: #ffe6ff;
-  --clr-surface-3: #fbe6ff;
+  --clr-surface-1: #fff4ff;
+  --clr-surface-2: #ffe7ff;
+  --clr-surface-3: #fbe9ff;
 
-  --clr-violet: #b46dff;
-  --clr-violet-dark: #7a3fd0;
-  --clr-violet-soft: #e2c7ff;
+  --clr-violet: #c59bff;
+  --clr-violet-dark: #8a63ff;
+  --clr-violet-soft: #ead8ff;
 
-  --clr-pink: #ff7fe5;
-  --clr-pink-dark: #d425a6;
+  --clr-pink: #ff8fe8;
+  --clr-pink-dark: #e246b5;
 
-  --clr-accent-yellow: #ffe680;
-  --clr-accent-mint: #9af8e6;
+  --clr-accent-yellow: #fff4a8;
+  --clr-accent-mint: #b9ffe6;
+  --clr-accent-cyan: #9bf6ff;
 
   /* danger */
   --clr-danger: #ff3c7d;
@@ -39,7 +40,7 @@
   /* радиусы / бордеры */
   --radius-sm: 6px;
   --radius-md: 10px;
-  --radius-lg: 12px;
+  --radius-lg: 14px;
   --radius-pill: 999px;
   --radius-circle: 9999px;
 
@@ -47,21 +48,21 @@
   --border-soft: 2px;
 
   /* пиксельные тени */
-  --shadow-strong: 0 4px 0 rgba(43, 16, 54, 0.45);
-  --shadow-soft: 0 2px 0 rgba(43, 16, 54, 0.35);
+  --shadow-strong: 0 4px 0 rgba(42, 18, 64, 0.5);
+  --shadow-soft: 0 2px 0 rgba(42, 18, 64, 0.35);
 
   /* кнопки */
-  --btn-font-size: 11px;
+  --btn-font-size: 10px;
 
-  --btn-primary-bg: #ff8af0;
-  --btn-primary-bg-hover: #ff6ce7;
-  --btn-primary-border: #d425a6;
-  --btn-primary-shadow: #b21888;
+  --btn-primary-bg: #ff9af0;
+  --btn-primary-bg-hover: #ff7ee7;
+  --btn-primary-border: #e246b5;
+  --btn-primary-shadow: #b61f86;
 
-  --btn-secondary-bg: #ffe8ff;
-  --btn-secondary-bg-hover: #f7ddff;
-  --btn-secondary-border: #b46dff;
-  --btn-secondary-shadow: #8b5cf6;
+  --btn-secondary-bg: #ffeaff;
+  --btn-secondary-bg-hover: #f6ddff;
+  --btn-secondary-border: #c59bff;
+  --btn-secondary-shadow: #9b6cff;
 
   --btn-danger-bg: #ffb0cf;
   --btn-danger-bg-hover: #ff9cc3;
@@ -94,8 +95,13 @@ body {
   height: 100%;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font-body);
+  font-size: 14px;
   color: var(--clr-text-main);
   background-color: #fbe9ff;
   background-image:
@@ -108,14 +114,23 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* утилиты */
-
 h1,
 h2,
 h3,
 h4,
 p {
   margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.2;
+}
+
+p {
+  line-height: 1.6;
 }
 
 button {
@@ -146,9 +161,9 @@ textarea {
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-md);
   border: var(--border-strong) solid var(--clr-violet);
-  background: linear-gradient(90deg, #ffc8ff, #f4a8ff);
+  background: linear-gradient(90deg, #ffd4ff, #ffb8f8);
   box-shadow: var(--shadow-strong);
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
   position: relative;
   overflow: hidden;
 }
@@ -160,12 +175,22 @@ textarea {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  transition: left 0.6s ease;
 }
 
 .topbar:hover::before {
   left: 100%;
+}
+
+.topbar:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 0 rgba(42, 18, 64, 0.55);
 }
 
 .topbar__title {
@@ -183,7 +208,6 @@ textarea {
 /* кнопки навигации */
 
 .nav-btn {
-  /* в HTML: class="btn btn--secondary btn--pill nav-btn" */
   font-size: 9px;
   padding: 6px 14px;
 }
@@ -208,7 +232,6 @@ textarea {
 }
 
 .topbar__user-btn {
-  /* в HTML: class="btn btn--secondary btn--pill topbar__user-btn" */
   font-size: 9px;
   padding: 4px 12px;
 }
@@ -235,15 +258,16 @@ textarea {
   box-shadow: var(--shadow-strong);
   transition: all 0.2s ease;
   position: relative;
-}
-
-.panel:hover {
-  box-shadow: 0 6px 0 rgba(43, 16, 54, 0.5);
-  transform: translateY(-2px);
+  animation: fadeIn 0.3s ease;
 }
 
 .panel--capture {
   background: var(--clr-surface-2);
+}
+
+.panel:hover {
+  box-shadow: 0 6px 0 rgba(42, 18, 64, 0.55);
+  transform: translateY(-2px);
 }
 
 .panel__title {
@@ -256,14 +280,14 @@ textarea {
   text-transform: uppercase;
   letter-spacing: 0.18em;
   color: var(--clr-text-main);
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .panel__title-badge {
   padding: 3px 8px;
   border-radius: var(--radius-pill);
   border: var(--border-soft) solid var(--clr-violet);
-  background: #fce5ff;
+  background: #fbe7ff;
   font-size: 9px;
 }
 
@@ -301,7 +325,11 @@ textarea {
   border: var(--border-soft) solid var(--clr-violet-soft);
   background: #fffdfd;
   outline: none;
-  transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease,
+    transform 0.1s ease;
 }
 
 .input-text:focus,
@@ -309,7 +337,8 @@ textarea {
 .input-select:focus,
 textarea:focus {
   border-color: var(--clr-violet);
-  box-shadow: 0 0 0 3px rgba(180, 109, 255, 0.2), 0 2px 4px rgba(180, 109, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(197, 155, 255, 0.25),
+    0 2px 4px rgba(197, 155, 255, 0.15);
   background: #ffffff;
   transform: translateY(-1px);
 }
@@ -333,7 +362,7 @@ textarea {
   max-width: 220px;
 }
 
-/* чекбоксы / радио под пиксель */
+/* чекбоксы */
 
 .checkbox-label {
   display: inline-flex;
@@ -351,7 +380,7 @@ textarea {
   border: 2px solid var(--clr-violet);
   appearance: none;
   background: #fff;
-  box-shadow: 0 2px 0 rgba(43, 16, 54, 0.3);
+  box-shadow: 0 2px 0 rgba(42, 18, 64, 0.3);
   position: relative;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -378,7 +407,7 @@ textarea {
   justify-content: center;
   color: #2b0f33;
   font-size: 10px;
-  font-weight: bold;
+  font-weight: 700;
   line-height: 1;
 }
 
@@ -390,7 +419,7 @@ textarea {
   letter-spacing: 0.18em;
   text-transform: uppercase;
 
-  padding: 11px 20px;
+  padding: 10px 18px;
   border-radius: var(--radius-md);
   border-width: var(--border-soft);
   border-style: solid;
@@ -406,15 +435,15 @@ textarea {
 
 .btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 0 rgba(43, 16, 54, 0.5);
+  box-shadow: 0 4px 0 rgba(42, 18, 64, 0.5);
 }
 
 .btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 rgba(43, 16, 54, 0.4);
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(42, 18, 64, 0.4);
 }
 
-/* варианты */
+/* модификаторы */
 
 .btn--primary {
   background: var(--btn-primary-bg);
@@ -467,6 +496,23 @@ textarea {
   align-items: center;
   justify-content: center;
   padding: 0;
+}
+
+/* совместимость с классами в HTML */
+
+.btn-primary {
+  @extend .btn;
+  @extend .btn--primary;
+}
+
+.btn-secondary {
+  @extend .btn;
+  @extend .btn--secondary;
+}
+
+.btn-danger {
+  @extend .btn;
+  @extend .btn--danger;
 }
 
 /* блок с кнопками */
@@ -531,8 +577,14 @@ textarea {
   padding: var(--space-3) var(--space-4);
   display: flex;
   gap: var(--space-2);
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   position: relative;
+}
+
+.task-item:hover {
+  transform: translateX(4px);
+  border-color: var(--clr-violet);
+  box-shadow: 0 2px 8px rgba(197, 155, 255, 0.28);
 }
 
 .task-item__main {
@@ -548,7 +600,7 @@ textarea {
 
 .task-item__title {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.4;
   color: var(--clr-text-main);
   margin-bottom: var(--space-1);
@@ -595,6 +647,12 @@ textarea {
   display: inline-block;
 }
 
+.tag:hover {
+  transform: scale(1.05);
+  border-color: var(--clr-violet);
+  background: var(--clr-surface-2);
+}
+
 /* экшены таска */
 
 .task-item__actions {
@@ -609,8 +667,19 @@ textarea {
 }
 
 .task-item__delete {
-  /* в HTML: class="btn btn--danger btn-icon task-item__delete" */
   font-size: 14px;
+}
+
+/* выполненные задачи */
+
+.task-item--done {
+  opacity: 0.7;
+  background: #f5f5f5;
+}
+
+.task-item--done .task-item__title {
+  text-decoration: line-through;
+  color: var(--clr-text-muted);
 }
 
 /* =============== PROJECTS =============== */
@@ -645,8 +714,14 @@ textarea {
   border: var(--border-soft) solid var(--clr-violet-soft);
   background: var(--clr-surface-1);
   padding: var(--space-3);
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   position: relative;
+}
+
+.project-item:hover {
+  transform: translateX(4px);
+  border-color: var(--clr-violet);
+  box-shadow: 0 2px 8px rgba(197, 155, 255, 0.28);
 }
 
 .project-item__header {
@@ -659,7 +734,7 @@ textarea {
 
 .project-item__title {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.4;
   color: var(--clr-text-main);
   margin-bottom: var(--space-1);
@@ -694,12 +769,10 @@ textarea {
 }
 
 .project-item__delete {
-  /* в HTML: class="btn btn--danger btn-icon project-item__delete" */
   font-size: 14px;
 }
 
 .project-item__toggle {
-  /* в HTML: class="btn btn--secondary btn--circle project-item__toggle" */
   width: 32px;
   height: 32px;
   display: inline-flex;
@@ -713,11 +786,14 @@ textarea {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(20, 4, 30, 0.4);
+  background: rgba(23, 4, 38, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 50;
+  animation: fadeIn 0.2s ease;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .modal {
@@ -727,10 +803,12 @@ textarea {
   border-radius: var(--radius-lg);
   border: var(--border-strong) solid var(--clr-violet);
   background: var(--clr-surface-1);
-  box-shadow: 0 8px 0 rgba(43, 16, 54, 0.5), 0 0 40px rgba(180, 109, 255, 0.3);
+  box-shadow: 0 8px 0 rgba(42, 18, 64, 0.55),
+    0 0 40px rgba(197, 155, 255, 0.3);
   position: relative;
   max-height: 90vh;
   overflow-y: auto;
+  animation: slideUp 0.25s ease;
 }
 
 .modal__title {
@@ -739,6 +817,13 @@ textarea {
   text-transform: uppercase;
   letter-spacing: 0.18em;
   margin-bottom: var(--space-3);
+}
+
+.modal__meta {
+  margin-bottom: var(--space-3);
+  font-size: 11px;
+  color: var(--clr-text-soft);
+  line-height: 1.5;
 }
 
 .modal__body {
@@ -755,7 +840,6 @@ textarea {
 }
 
 .modal__close {
-  /* в HTML: class="btn btn--secondary btn--circle modal__close" */
   position: absolute;
   top: 8px;
   right: 10px;
@@ -763,6 +847,18 @@ textarea {
   height: 30px;
   font-size: 18px;
   padding: 0;
+  border-radius: var(--radius-circle);
+  border: var(--border-soft) solid var(--btn-secondary-border);
+  background: var(--btn-secondary-bg);
+  box-shadow: 0 2px 0 var(--btn-secondary-shadow);
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.modal__close:hover {
+  transform: rotate(90deg) scale(1.1);
+  background: var(--btn-danger-bg);
+  border-color: var(--btn-danger-border);
 }
 
 /* =============== AUTH / ЛОГИН =============== */
@@ -784,14 +880,14 @@ textarea {
   letter-spacing: 0.18em;
   margin-bottom: var(--space-4);
   color: var(--clr-text-main);
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .auth-tabs {
   display: inline-flex;
   border-radius: var(--radius-pill);
   padding: 3px;
-  background: #f5ddff;
+  background: #f6dcff;
   margin-bottom: var(--space-4);
 }
 
@@ -804,11 +900,26 @@ textarea {
   border-radius: var(--radius-pill);
   background: transparent;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .auth-tab--active {
   background: var(--btn-primary-bg);
   color: #2b0f33;
+}
+
+.auth-tab:hover {
+  background: rgba(255, 154, 240, 0.4);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.auth-form .field-label {
+  margin-bottom: var(--space-1);
 }
 
 .auth-error {
@@ -819,12 +930,10 @@ textarea {
 
 /* =============== ДОПОЛНИТЕЛЬНЫЕ СТИЛИ =============== */
 
-/* Скрытие элементов */
 .hidden {
   display: none !important;
 }
 
-/* Текстовые элементы */
 .task-body {
   width: 100%;
   padding: 9px 11px;
@@ -832,7 +941,10 @@ textarea {
   border: var(--border-soft) solid var(--clr-violet-soft);
   background: #fffdfd;
   outline: none;
-  transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease;
   font-family: var(--font-body);
   font-size: 13px;
   line-height: 1.5;
@@ -842,7 +954,7 @@ textarea {
 
 .task-body:focus {
   border-color: var(--clr-violet);
-  box-shadow: 0 0 0 2px rgba(180, 109, 255, 0.25);
+  box-shadow: 0 0 0 2px rgba(197, 155, 255, 0.25);
   background: #ffffff;
 }
 
@@ -876,9 +988,19 @@ textarea {
   font-size: 11px;
   color: var(--clr-text-soft);
   line-height: 1.5;
+  animation: fadeIn 0.4s ease;
+}
+
+.empty-hint::before {
+  content: "✨";
+  display: block;
+  font-size: 24px;
+  margin-bottom: var(--space-2);
+  opacity: 0.6;
 }
 
 /* Группы полей */
+
 .field-group {
   display: flex;
   flex-direction: column;
@@ -890,7 +1012,8 @@ textarea {
   margin-bottom: 0;
 }
 
-/* Группа radio-кнопок */
+/* radio */
+
 .field-group:has(.radio) {
   flex-direction: row;
   align-items: center;
@@ -902,7 +1025,6 @@ textarea {
   margin-right: var(--space-2);
 }
 
-/* Радио кнопки */
 .radio {
   display: inline-flex;
   align-items: center;
@@ -931,7 +1053,7 @@ textarea {
   border: 2px solid var(--clr-violet);
   appearance: none;
   background: #fff;
-  box-shadow: 0 2px 0 rgba(43, 16, 54, 0.3);
+  box-shadow: 0 2px 0 rgba(42, 18, 64, 0.3);
   position: relative;
   cursor: pointer;
   flex-shrink: 0;
@@ -958,7 +1080,8 @@ textarea {
   box-shadow: 0 2px 0 var(--btn-primary-shadow);
 }
 
-/* Селекты */
+/* селекты */
+
 .select {
   width: 100%;
   padding: 9px 11px;
@@ -966,7 +1089,10 @@ textarea {
   border: var(--border-soft) solid var(--clr-violet-soft);
   background: #fffdfd;
   outline: none;
-  transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease;
   font-family: var(--font-body);
   font-size: 13px;
   color: var(--clr-text-main);
@@ -975,84 +1101,12 @@ textarea {
 
 .select:focus {
   border-color: var(--clr-violet);
-  box-shadow: 0 0 0 2px rgba(180, 109, 255, 0.25);
+  box-shadow: 0 0 0 2px rgba(197, 155, 255, 0.25);
   background: #ffffff;
 }
 
-/* Кнопки как отдельные классы (для совместимости с HTML) */
-.btn-primary {
-  font-family: var(--font-ui);
-  font-size: var(--btn-font-size);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  padding: 11px 20px;
-  border-radius: var(--radius-md);
-  border: var(--border-soft) solid var(--btn-primary-border);
-  background: var(--btn-primary-bg);
-  color: #2b0f33;
-  box-shadow: 0 3px 0 var(--btn-primary-shadow);
-  cursor: pointer;
-  transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.1s ease;
-}
+/* фильтры / чипы */
 
-.btn-primary:hover {
-  background: var(--btn-primary-bg-hover);
-}
-
-.btn-primary:active {
-  transform: translateY(1px);
-  box-shadow: 0 1px 0 rgba(43, 16, 54, 0.4);
-}
-
-.btn-secondary {
-  font-family: var(--font-ui);
-  font-size: var(--btn-font-size);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  padding: 11px 20px;
-  border-radius: var(--radius-md);
-  border: var(--border-soft) solid var(--btn-secondary-border);
-  background: var(--btn-secondary-bg);
-  color: var(--clr-text-main);
-  box-shadow: 0 3px 0 var(--btn-secondary-shadow);
-  cursor: pointer;
-  transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.1s ease;
-}
-
-.btn-secondary:hover {
-  background: var(--btn-secondary-bg-hover);
-}
-
-.btn-secondary:active {
-  transform: translateY(1px);
-  box-shadow: 0 1px 0 rgba(43, 16, 54, 0.4);
-}
-
-.btn-danger {
-  font-family: var(--font-ui);
-  font-size: var(--btn-font-size);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  padding: 11px 20px;
-  border-radius: var(--radius-md);
-  border: var(--border-soft) solid var(--btn-danger-border);
-  background: var(--btn-danger-bg);
-  color: #4a0b27;
-  box-shadow: 0 3px 0 var(--btn-danger-shadow);
-  cursor: pointer;
-  transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.1s ease;
-}
-
-.btn-danger:hover {
-  background: var(--btn-danger-bg-hover);
-}
-
-.btn-danger:active {
-  transform: translateY(1px);
-  box-shadow: 0 1px 0 rgba(43, 16, 54, 0.4);
-}
-
-/* Заголовок экрана "Сегодня" */
 .today-header {
   display: flex;
   align-items: center;
@@ -1065,7 +1119,6 @@ textarea {
   margin-bottom: 0;
 }
 
-/* Фильтры (чипы) */
 .filter-line {
   display: flex;
   align-items: center;
@@ -1103,122 +1156,7 @@ textarea {
   box-shadow: 0 2px 0 var(--btn-primary-shadow);
 }
 
-.chip--active:hover {
-  background: var(--btn-primary-bg-hover);
-}
-
-/* Форма авторизации */
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.auth-form .field-label {
-  margin-bottom: var(--space-1);
-}
-
-/* Мета информация в модалке */
-.modal__meta {
-  margin-bottom: var(--space-3);
-  font-size: 11px;
-  color: var(--clr-text-soft);
-  line-height: 1.5;
-}
-
-/* Улучшенные анимации для модалок */
-.modal-backdrop {
-  animation: fadeIn 0.2s ease;
-}
-
-.modal {
-  animation: slideUp 0.25s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Улучшенные hover эффекты для элементов списка */
-.task-item {
-  transition: all 0.15s ease;
-}
-
-.task-item:hover {
-  transform: translateX(4px);
-  border-color: var(--clr-violet);
-  box-shadow: 0 2px 8px rgba(180, 109, 255, 0.2);
-}
-
-.project-item {
-  transition: all 0.15s ease;
-}
-
-.project-item:hover {
-  transform: translateX(4px);
-  border-color: var(--clr-violet);
-  box-shadow: 0 2px 8px rgba(180, 109, 255, 0.2);
-}
-
-/* Улучшенные стили для выполненных задач */
-.task-item--done {
-  opacity: 0.7;
-  background: #f5f5f5;
-}
-
-.task-item--done .task-item__title {
-  text-decoration: line-through;
-  color: var(--clr-text-muted);
-}
-
-/* Улучшенные стили для навигации */
-.nav-btn {
-  transition: all 0.15s ease;
-}
-
-.nav-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 0 rgba(43, 16, 54, 0.45);
-}
-
-/* Улучшенные стили для панелей */
-.panel {
-  animation: fadeIn 0.3s ease;
-}
-
-/* Улучшенные стили для тегов */
-.tag {
-  transition: all 0.12s ease;
-}
-
-.tag:hover {
-  transform: scale(1.05);
-  border-color: var(--clr-violet);
-  background: var(--clr-surface-2);
-}
-
-/* Улучшенные стили для пустых состояний */
-.empty-hint {
-  animation: fadeIn 0.4s ease;
-}
-
-/* =============== ПРОЧЕЕ / ХЕЛПЕРЫ =============== */
+/* текстовые хелперы */
 
 .text-muted {
   color: var(--clr-text-muted);
@@ -1253,21 +1191,8 @@ textarea {
   color: var(--clr-text-soft);
 }
 
-/* Улучшенная типографика */
-h1, h2, h3, h4 {
-  line-height: 1.2;
-}
+/* скроллбар */
 
-p {
-  line-height: 1.6;
-}
-
-/* Плавная прокрутка */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Кастомный скроллбар */
 ::-webkit-scrollbar {
   width: 12px;
   height: 12px;
@@ -1295,49 +1220,44 @@ html {
   scrollbar-color: var(--clr-violet-soft) var(--clr-surface-2);
 }
 
-/* Улучшенные фокус-стили для доступности */
+/* фокус */
+
 *:focus-visible {
   outline: 2px solid var(--clr-violet);
   outline-offset: 2px;
 }
 
-/* Улучшенные стили для инпутов при ошибке */
+/* ошибки в инпутах */
+
 .input-text:invalid,
 .input-date:invalid,
 .select:invalid {
   border-color: var(--clr-danger);
 }
 
-/* Улучшенные стили для модального backdrop */
-.modal-backdrop {
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+/* анимации */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-/* Улучшенные стили для кнопки закрытия модалки */
-.modal__close:hover {
-  transform: rotate(90deg) scale(1.1);
-  background: var(--btn-danger-bg);
-  border-color: var(--btn-danger-border);
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Улучшенные стили для auth tabs */
-.auth-tab {
-  transition: all 0.15s ease;
-}
-
-.auth-tab:hover {
-  background: rgba(255, 138, 240, 0.3);
-}
-
-/* Улучшенные стили для пустых состояний с иконками */
-.empty-hint::before {
-  content: "✨";
-  display: block;
-  font-size: 24px;
-  margin-bottom: var(--space-2);
-  opacity: 0.6;
-}
+/* адаптив */
 
 @media (max-width: 768px) {
   .app {

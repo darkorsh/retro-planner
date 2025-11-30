@@ -147,7 +147,8 @@ def migrate_from_file_if_needed():
                 project=t.get("project") or "",
                 date=t.get("date"),
                 done=t.get("done", False),
-                createdAT=t.get("createdAt") or t.get("created_at"),
+                createdAt=t.get("createdAt") or t.get("created_at"),
+                
             )
             db.add(task)
         db.commit()

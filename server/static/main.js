@@ -1,5 +1,5 @@
 // ===============================
-//  RETRO PLANNER CORE
+//  RETRO PLANNER CORE + AUTH
 // ===============================
 
 // ---------- DOM-ссылки ----------
@@ -28,6 +28,19 @@ const taskModalDeleteBtnEl = document.getElementById("taskModalDeleteBtn");
 const taskModalProjectSelectEl = document.getElementById("taskModalProjectSelect");
 const taskModalDateEl = document.getElementById("taskModalDate");
 
+// Auth / user
+const userPanelEl = document.getElementById("userPanel");
+const authModalEl = document.getElementById("authModal");
+const authModalCloseEl = document.getElementById("authModalClose");
+const authCancelBtnEl = document.getElementById("authCancelBtn");
+const authSubmitBtnEl = document.getElementById("authSubmitBtn");
+const authNameEl = document.getElementById("authName");
+const authEmailEl = document.getElementById("authEmail");
+const authPasswordEl = document.getElementById("authPassword");
+const authErrorEl = document.getElementById("authError");
+const authTabs = document.querySelectorAll(".auth-tab");
+const authModalTitleEl = document.getElementById("authModalTitle");
+const authModalSubtitleEl = document.getElementById("authModalSubtitle");
 
 // Контейнеры списков
 const streamListEl = document.getElementById("streamList");
@@ -41,8 +54,6 @@ const streamEmptyEl = document.getElementById("stream-empty");
 const projectsEmptyEl = document.getElementById("projects-empty");
 const todayFilterDateEl = document.getElementById("todayFilterDate");
 let todayFilterDate = null; // null => используем "сегодня"
-
-
 
 // Выполненные
 const doneListEl = document.getElementById("doneList");
@@ -65,6 +76,14 @@ let state = {
 let currentModalTaskId = null;
 let streamFilter = "all"; // all | work | personal
 
+// authState: токен + публичные данные пользователя
+let authState = {
+  token: null,
+  user: null,
+  mode: "login" // login | register
+};
+
+
 // =======================
 //          API
 // =======================
@@ -72,9 +91,38 @@ let streamFilter = "all"; // all | work | personal
 // один сервер и локально, и на Render
 const API_BASE = "";
 
+// вспомогательная функция: заголовки с токеном
+function authHeaders() {
+  if (!authState.token) return {};
+  return {
+    Authorization: "Bearer " + authState.token
+  };
+}
+
+// универсальная обёртка над fetch: если 401 -> сбрасываем авторизацию
+async function apiFetch(url, options = {}) {
+  const opts = {
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      ...authHeaders()
+    }
+  };
+
+  const res = await fetch(url, opts);
+
+  if (res.status === 401) {
+    // токен протух / невалидный
+    setAuth(null, null);
+    throw new Error("UNAUTHORIZED");
+  }
+
+  return res;
+}
+
 async function apiLoadTasks() {
   try {
-    const res = await fetch(`${API_BASE}/tasks`);
+    const res = await apiFetch(`${API_BASE}/tasks`);
     if (!res.ok) {
       console.error("Не удалось загрузить задачи", res.status);
       return;
@@ -89,7 +137,7 @@ async function apiLoadTasks() {
 
 async function apiCreateTask(payload) {
   try {
-    const res = await fetch(`${API_BASE}/tasks`, {
+    const res = await apiFetch(`${API_BASE}/tasks`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
@@ -108,7 +156,7 @@ async function apiCreateTask(payload) {
 
 async function apiUpdateTask(id, patch) {
   try {
-    const res = await fetch(`${API_BASE}/tasks/${id}`, {
+    const res = await apiFetch(`${API_BASE}/tasks/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(patch)
@@ -130,7 +178,7 @@ async function apiUpdateTask(id, patch) {
 
 async function apiDeleteTask(id) {
   try {
-    const res = await fetch(`${API_BASE}/tasks/${id}`, {
+    const res = await apiFetch(`${API_BASE}/tasks/${id}`, {
       method: "DELETE"
     });
     if (!res.ok && res.status !== 204) {
@@ -142,6 +190,42 @@ async function apiDeleteTask(id) {
   } catch (e) {
     console.error("Ошибка при удалении задачи", e);
   }
+}
+
+// -------- AUTH API --------
+
+async function apiAuthLogin(email, password) {
+  const res = await fetch(`${API_BASE}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    const msg = data?.detail || "Не удалось войти";
+    throw new Error(msg);
+  }
+
+  return data; // { token, user }
+}
+
+async function apiAuthRegister(name, email, password) {
+  const res = await fetch(`${API_BASE}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, password })
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    const msg = data?.detail || "Не удалось зарегистрироваться";
+    throw new Error(msg);
+  }
+
+  return data; // { token, user }
 }
 
 
@@ -200,7 +284,138 @@ function renderProjectSelectOptions() {
   }
 }
 
-// ---------- Создание и обновление задач ----------
+
+// =======================
+//      AUTH STATE & UI
+// =======================
+
+function loadAuthFromStorage() {
+  try {
+    const raw = localStorage.getItem("retro_auth");
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.token && parsed.user) {
+      authState.token = parsed.token;
+      authState.user = parsed.user;
+    }
+  } catch (e) {
+    console.warn("Не удалось прочитать auth из localStorage", e);
+  }
+}
+
+function setAuth(token, user) {
+  authState.token = token;
+  authState.user = user;
+
+  if (token && user) {
+    localStorage.setItem("retro_auth", JSON.stringify({ token, user }));
+  } else {
+    localStorage.removeItem("retro_auth");
+  }
+
+  renderUserPanel();
+}
+
+function renderUserPanel() {
+  if (!userPanelEl) return;
+
+  userPanelEl.innerHTML = "";
+
+  if (!authState.user) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "topbar__user-btn";
+    btn.textContent = "ВОЙТИ";
+    btn.addEventListener("click", () => openAuthModal("login"));
+    userPanelEl.appendChild(btn);
+    return;
+  }
+
+  const nameSpan = document.createElement("span");
+  nameSpan.className = "topbar__user-name";
+  nameSpan.textContent = authState.user.name || authState.user.email;
+
+  const emailSpan = document.createElement("span");
+  emailSpan.textContent = `(${authState.user.email})`;
+
+  const btnLogout = document.createElement("button");
+  btnLogout.type = "button";
+  btnLogout.className = "topbar__user-btn";
+  btnLogout.textContent = "ВЫЙТИ";
+  btnLogout.addEventListener("click", handleLogout);
+
+  userPanelEl.appendChild(nameSpan);
+  userPanelEl.appendChild(emailSpan);
+  userPanelEl.appendChild(btnLogout);
+}
+
+async function handleLogout() {
+  try {
+    await fetch(`${API_BASE}/auth/logout`, {
+      method: "POST",
+      headers: {
+        ...authHeaders()
+      }
+    });
+  } catch (e) {
+    // и ладно
+  } finally {
+    setAuth(null, null);
+    state.tasks = [];
+    renderAll();
+  }
+}
+
+// --- модалка логина / регистрации ---
+
+function openAuthModal(mode = "login") {
+  authState.mode = mode;
+
+  if (authErrorEl) {
+    authErrorEl.style.display = "none";
+    authErrorEl.textContent = "";
+  }
+
+  if (authNameEl) authNameEl.value = "";
+  if (authEmailEl) authEmailEl.value = "";
+  if (authPasswordEl) authPasswordEl.value = "";
+
+  updateAuthModeUI();
+
+  if (authModalEl) {
+    authModalEl.classList.remove("hidden");
+  }
+}
+
+function closeAuthModal() {
+  if (authModalEl) {
+    authModalEl.classList.add("hidden");
+  }
+}
+
+function updateAuthModeUI() {
+  authTabs.forEach(tab => {
+    const tabMode = tab.dataset.mode;
+    tab.classList.toggle("auth-tab--active", tabMode === authState.mode);
+  });
+
+  if (authState.mode === "login") {
+    if (authModalTitleEl) authModalTitleEl.textContent = "Вход";
+    if (authModalSubtitleEl)
+      authModalSubtitleEl.textContent =
+        "Вернись к своим делишкам. Нужны только почта и пароль.";
+    if (authNameEl) authNameEl.closest("div")?.style && (authNameEl.closest("div").style.display = "block");
+  } else {
+    if (authModalTitleEl) authModalTitleEl.textContent = "Регистрация";
+    if (authModalSubtitleEl)
+      authModalSubtitleEl.textContent =
+        "Создадим новый профиль планера. Одного на все твои всратые планы.";
+  }
+}
+
+// =======================
+//  Создание и обновление задач
+// =======================
 
 function createTask({ text, category, project, date }) {
   const cleanText = (text || "").trim();
@@ -236,43 +451,39 @@ function openTaskModal(taskId) {
   taskModalTextareaEl.value = task.text || "";
   autoResizeTextarea(taskModalTextareaEl);
 
-// каждый раз, когда вводишь текст, пересчитываем высоту
-function handleTextareaInput() {
-  autoResizeTextarea(taskModalTextareaEl);
-}
+  function handleTextareaInput() {
+    autoResizeTextarea(taskModalTextareaEl);
+  }
 
-// чтобы не навешивать миллион обработчиков,
-// сначала снимаем старый, потом вешаем новый
-taskModalTextareaEl.removeEventListener("input", handleTextareaInput);
-taskModalTextareaEl.addEventListener("input", handleTextareaInput);
+  taskModalTextareaEl.removeEventListener("input", handleTextareaInput);
+  taskModalTextareaEl.addEventListener("input", handleTextareaInput);
 
   // заполняем список проектов
-if (taskModalProjectSelectEl) {
-  const projectNames = getProjectNames();
+  if (taskModalProjectSelectEl) {
+    const projectNames = getProjectNames();
 
-  taskModalProjectSelectEl.innerHTML = "";
+    taskModalProjectSelectEl.innerHTML = "";
 
-  const emptyOpt = document.createElement("option");
-  emptyOpt.value = "";
-  emptyOpt.textContent = "— без проекта —";
-  taskModalProjectSelectEl.appendChild(emptyOpt);
+    const emptyOpt = document.createElement("option");
+    emptyOpt.value = "";
+    emptyOpt.textContent = "— без проекта —";
+    taskModalProjectSelectEl.appendChild(emptyOpt);
 
-  for (const name of projectNames) {
-    const opt = document.createElement("option");
-    opt.value = name;
-    opt.textContent = name;
-    if (task.project === name) {
-      opt.selected = true;
+    for (const name of projectNames) {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      if (task.project === name) {
+        opt.selected = true;
+      }
+      taskModalProjectSelectEl.appendChild(opt);
     }
-    taskModalProjectSelectEl.appendChild(opt);
   }
-}
 
-// дата
-if (taskModalDateEl) {
-  taskModalDateEl.value = task.date || "";
-}
-
+  // дата
+  if (taskModalDateEl) {
+    taskModalDateEl.value = task.date || "";
+  }
 
   taskModalEl.classList.remove("hidden");
 }
@@ -342,9 +553,8 @@ function renderToday() {
   todayListEl.innerHTML = "";
 
   const today = getTodayISO();
-  const date = todayFilterDate || today; // если не выбрана дата, берем сегодня
+  const date = todayFilterDate || today;
 
-  // при первом рендере заполняем input значением
   if (todayFilterDateEl && !todayFilterDateEl.value) {
     todayFilterDateEl.value = date;
   }
@@ -414,7 +624,7 @@ function renderProjects() {
     const itemEl = document.createElement("li");
     itemEl.className = "project-item";
 
-    // ----- header проекта -----
+    // header проекта
     const headerEl = document.createElement("div");
     headerEl.className = "project-item__header";
 
@@ -451,7 +661,7 @@ function renderProjects() {
     headerEl.appendChild(leftEl);
     headerEl.appendChild(controlsEl);
 
-    // ----- тело проекта -----
+    // тело проекта
     const bodyEl = document.createElement("div");
     bodyEl.className = "project-item__body project-item__body--collapsed";
 
@@ -497,7 +707,7 @@ function renderProjects() {
       tasksListEl.appendChild(taskLi);
     }
 
-    // ----- форма добавления задачи в этот проект -----
+    // форма добавления задачи в этот проект
     const addWrapperEl = document.createElement("div");
     addWrapperEl.className = "project-add";
 
@@ -547,8 +757,6 @@ function renderProjects() {
     bodyEl.appendChild(tasksListEl);
     bodyEl.appendChild(addWrapperEl);
 
-    // ----- логика раскрытия / удаления проекта -----
-
     function toggleProject() {
       const isCollapsed = bodyEl.classList.contains("project-item__body--collapsed");
       if (isCollapsed) {
@@ -564,7 +772,6 @@ function renderProjects() {
       const ok = confirm(`Удалить проект "${projectName}"? Все задачи перейдут в "без проекта".`);
       if (!ok) return;
 
-      // убираем из ручного списка проектов, если есть
       const idx = state.projects.indexOf(projectName);
       if (idx !== -1) {
         state.projects.splice(idx, 1);
@@ -579,12 +786,12 @@ function renderProjects() {
     headerEl.addEventListener("click", toggleProject);
 
     toggleEl.addEventListener("click", (e) => {
-      e.stopPropagation(); // чтобы клик по стрелке не срабатывал дважды
+      e.stopPropagation();
       toggleProject();
     });
 
     deleteProjectBtn.addEventListener("click", (e) => {
-      e.stopPropagation(); // чтобы при удалении не пытался раскрыться
+      e.stopPropagation();
       deleteProject();
     });
 
@@ -593,26 +800,6 @@ function renderProjects() {
     projectsListEl.appendChild(itemEl);
   }
 }
-
-
-function deleteProject() {
-  const ok = confirm(`Удалить проект "${projectName}"? Все задачи перейдут в "без проекта".`);
-  if (!ok) return;
-
-  // убираем из ручного списка проектов, если такой есть
-  const idx = state.projects.indexOf(projectName);
-  if (idx !== -1) {
-    state.projects.splice(idx, 1);
-  }
-
-  const tasksInProject = state.tasks.filter(t => t.project === projectName);
-
-  // переносим задачи в поток: очищаем поле project
-  for (const task of tasksInProject) {
-    apiUpdateTask(task.id, { project: "" });
-  }
-}
-
 
 function renderDone() {
   if (!doneListEl) return;
@@ -704,7 +891,6 @@ if (taskModalDeleteBtnEl) {
   taskModalDeleteBtnEl.addEventListener("click", () => {
     if (!currentModalTaskId) return;
 
-    // можешь убрать confirm, если любишь жить на грани
     const ok = confirm("Удалить задачу навсегда?");
     if (!ok) return;
 
@@ -712,8 +898,6 @@ if (taskModalDeleteBtnEl) {
     closeTaskModal();
   });
 }
-
-
 
 // Ctrl+Enter в textarea
 if (descEl) {
@@ -792,8 +976,7 @@ if (todayFilterDateEl) {
   });
 }
 
-
-// Модалка: кнопки
+// Модалка задачи: кнопки
 if (taskModalCloseEl) {
   taskModalCloseEl.addEventListener("click", closeTaskModal);
 }
@@ -822,17 +1005,95 @@ if (taskModalSaveBtnEl) {
   });
 }
 
+// Auth модалка: события
 
-// Закрытие по Esc
+authTabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    const mode = tab.dataset.mode || "login";
+    authState.mode = mode;
+    updateAuthModeUI();
+  });
+});
+
+if (authModalCloseEl) {
+  authModalCloseEl.addEventListener("click", closeAuthModal);
+}
+if (authCancelBtnEl) {
+  authCancelBtnEl.addEventListener("click", closeAuthModal);
+}
+if (authModalEl) {
+  authModalEl.addEventListener("click", (e) => {
+    if (e.target === authModalEl || e.target.classList.contains("modal__backdrop")) {
+      closeAuthModal();
+    }
+  });
+}
+if (authSubmitBtnEl) {
+  authSubmitBtnEl.addEventListener("click", async () => {
+    if (!authEmailEl || !authPasswordEl) return;
+
+    const email = authEmailEl.value.trim();
+    const password = authPasswordEl.value;
+
+    if (!email || !password) {
+      authErrorEl.textContent = "Нужно ввести почту и пароль.";
+      authErrorEl.style.display = "block";
+      return;
+    }
+
+    if (authState.mode === "register") {
+      const name = authNameEl?.value.trim() || email;
+      if (!name) {
+        authErrorEl.textContent = "Имя обязательно для регистрации.";
+        authErrorEl.style.display = "block";
+        return;
+      }
+      try {
+        const data = await apiAuthRegister(name, email, password);
+        setAuth(data.token, data.user);
+        closeAuthModal();
+        await apiLoadTasks();
+      } catch (e) {
+        authErrorEl.textContent = e.message || "Ошибка регистрации";
+        authErrorEl.style.display = "block";
+      }
+    } else {
+      try {
+        const data = await apiAuthLogin(email, password);
+        setAuth(data.token, data.user);
+        closeAuthModal();
+        await apiLoadTasks();
+      } catch (e) {
+        authErrorEl.textContent = e.message || "Ошибка входа";
+        authErrorEl.style.display = "block";
+      }
+    }
+  });
+}
+
+// Закрытие модалок по Esc
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     closeTaskModal();
+    closeAuthModal();
   }
 });
 
 // ---------- Старт ----------
 
-document.addEventListener("DOMContentLoaded", () => {
-  apiLoadTasks();
+document.addEventListener("DOMContentLoaded", async () => {
+  loadAuthFromStorage();
+  renderUserPanel();
   showScreen("capture");
+
+  if (authState.token) {
+    try {
+      await apiLoadTasks();
+    } catch {
+      // токен протух, покажем пусто
+    }
+  } else {
+    // сразу предлагаем войти, но не навязчиво
+    // можно просто оставить кнопку "ВОЙТИ" без автопопапа
+  }
 });

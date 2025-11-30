@@ -709,3 +709,74 @@ body {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* =============== ПОЛЬЗОВАТЕЛЬ / AUTH =============== */
+
+.topbar {
+  gap: 12px;
+}
+
+.topbar__user {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--clr-text-soft);
+}
+
+.topbar__user-name {
+  font-weight: 600;
+}
+
+.topbar__user-btn {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 2px solid var(--clr-violet);
+  background: #ffe8ff;
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--clr-violet);
+}
+
+.topbar__user-btn:hover {
+  background: #ffd6ff;
+}
+
+/* табы login / register */
+
+.auth-tabs {
+  display: inline-flex;
+  border-radius: 999px;
+  border: 2px solid var(--clr-violet-soft);
+  background: #ffeaff;
+  padding: 2px;
+  margin-top: 8px;
+  margin-bottom: 10px;
+  gap: 2px;
+}
+
+.auth-tab {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.auth-tab--active {
+  background: var(--btn-primary-bg);
+  color: #2b0f33;
+}
+
+.auth-error {
+  margin-top: 6px;
+  color: #b4233d;
+}

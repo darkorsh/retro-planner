@@ -104,6 +104,8 @@ body {
     linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
   background-size: 100% 100%, 32px 32px, 32px 32px;
   background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* утилиты */
@@ -146,6 +148,24 @@ textarea {
   border: var(--border-strong) solid var(--clr-violet);
   background: linear-gradient(90deg, #ffc8ff, #f4a8ff);
   box-shadow: var(--shadow-strong);
+  transition: box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.topbar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.topbar:hover::before {
+  left: 100%;
 }
 
 .topbar__title {
@@ -213,6 +233,13 @@ textarea {
   border: var(--border-strong) solid var(--clr-violet-soft);
   background: var(--clr-surface-1);
   box-shadow: var(--shadow-strong);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.panel:hover {
+  box-shadow: 0 6px 0 rgba(43, 16, 54, 0.5);
+  transform: translateY(-2px);
 }
 
 .panel--capture {
@@ -223,11 +250,13 @@ textarea {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
   font-family: var(--font-ui);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.18em;
+  color: var(--clr-text-main);
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .panel__title-badge {
@@ -280,8 +309,9 @@ textarea {
 .input-select:focus,
 textarea:focus {
   border-color: var(--clr-violet);
-  box-shadow: 0 0 0 2px rgba(180, 109, 255, 0.25);
+  box-shadow: 0 0 0 3px rgba(180, 109, 255, 0.2), 0 2px 4px rgba(180, 109, 255, 0.1);
   background: #ffffff;
+  transform: translateY(-1px);
 }
 
 textarea {
@@ -323,18 +353,33 @@ textarea {
   background: #fff;
   box-shadow: 0 2px 0 rgba(43, 16, 54, 0.3);
   position: relative;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.checkbox-label input[type="checkbox"]:hover {
+  transform: scale(1.1);
+  border-color: var(--clr-violet-dark);
 }
 
 .checkbox-label input[type="checkbox"]:checked {
   background: var(--btn-primary-bg);
   border-color: var(--btn-primary-border);
+  box-shadow: 0 2px 0 var(--btn-primary-shadow);
 }
 
 .checkbox-label input[type="checkbox"]:checked::after {
-  content: "";
+  content: "✓";
   position: absolute;
-  inset: 2px;
-  background: #2b0f33;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2b0f33;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 1;
 }
 
 /* =============== КНОПКИ =============== */
@@ -359,8 +404,13 @@ textarea {
     border-color 0.1s ease;
 }
 
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 rgba(43, 16, 54, 0.5);
+}
+
 .btn:active {
-  transform: translateY(1px);
+  transform: translateY(2px);
   box-shadow: 0 1px 0 rgba(43, 16, 54, 0.4);
 }
 
@@ -478,9 +528,11 @@ textarea {
   border-radius: var(--radius-md);
   border: var(--border-soft) solid var(--clr-violet-soft);
   background: var(--clr-surface-3);
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4);
   display: flex;
   gap: var(--space-2);
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 .task-item__main {
@@ -496,7 +548,10 @@ textarea {
 
 .task-item__title {
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--clr-text-main);
+  margin-bottom: var(--space-1);
 }
 
 .task-item__meta {
@@ -513,6 +568,13 @@ textarea {
   border-radius: var(--radius-pill);
   border: var(--border-soft) solid var(--clr-violet-soft);
   background: #fff9ff;
+  transition: all 0.12s ease;
+}
+
+.task-item__meta-pill:hover {
+  transform: scale(1.05);
+  border-color: var(--clr-violet);
+  background: var(--clr-surface-2);
 }
 
 .task-item__tags {
@@ -523,11 +585,14 @@ textarea {
 }
 
 .tag {
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: var(--radius-pill);
   border: var(--border-soft) solid var(--clr-violet-soft);
   background: #fff9ff;
   font-size: 9px;
+  font-weight: 500;
+  transition: all 0.12s ease;
+  display: inline-block;
 }
 
 /* экшены таска */
@@ -580,6 +645,8 @@ textarea {
   border: var(--border-soft) solid var(--clr-violet-soft);
   background: var(--clr-surface-1);
   padding: var(--space-3);
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 .project-item__header {
@@ -592,7 +659,10 @@ textarea {
 
 .project-item__title {
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--clr-text-main);
+  margin-bottom: var(--space-1);
 }
 
 .project-item__meta {
@@ -653,12 +723,14 @@ textarea {
 .modal {
   max-width: 480px;
   width: 100%;
-  padding: var(--space-4);
+  padding: var(--space-5);
   border-radius: var(--radius-lg);
   border: var(--border-strong) solid var(--clr-violet);
   background: var(--clr-surface-1);
-  box-shadow: var(--shadow-strong);
+  box-shadow: 0 8px 0 rgba(43, 16, 54, 0.5), 0 0 40px rgba(180, 109, 255, 0.3);
   position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal__title {
@@ -710,7 +782,9 @@ textarea {
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
+  color: var(--clr-text-main);
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .auth-tabs {
@@ -743,6 +817,407 @@ textarea {
   color: #b4233d;
 }
 
+/* =============== ДОПОЛНИТЕЛЬНЫЕ СТИЛИ =============== */
+
+/* Скрытие элементов */
+.hidden {
+  display: none !important;
+}
+
+/* Текстовые элементы */
+.task-body {
+  width: 100%;
+  padding: 9px 11px;
+  border-radius: var(--radius-md);
+  border: var(--border-soft) solid var(--clr-violet-soft);
+  background: #fffdfd;
+  outline: none;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 90px;
+}
+
+.task-body:focus {
+  border-color: var(--clr-violet);
+  box-shadow: 0 0 0 2px rgba(180, 109, 255, 0.25);
+  background: #ffffff;
+}
+
+.hint-line {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  font-size: 10px;
+  color: var(--clr-text-soft);
+  flex-wrap: wrap;
+}
+
+.hint-line strong {
+  color: var(--clr-text-main);
+  font-weight: 600;
+}
+
+.subtle {
+  color: var(--clr-text-muted);
+  font-size: 10px;
+}
+
+.empty-hint {
+  margin-top: var(--space-4);
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--clr-violet-soft);
+  background: #fff7ff;
+  text-align: center;
+  font-size: 11px;
+  color: var(--clr-text-soft);
+  line-height: 1.5;
+}
+
+/* Группы полей */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.field-group .field-label {
+  margin-bottom: 0;
+}
+
+/* Группа radio-кнопок */
+.field-group:has(.radio) {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.field-group:has(.radio) .field-label {
+  margin-right: var(--space-2);
+}
+
+/* Радио кнопки */
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  border: var(--border-soft) solid var(--clr-violet-soft);
+  background: #fff9ff;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.radio:hover {
+  background: var(--clr-surface-2);
+  border-color: var(--clr-violet);
+  transform: translateY(-1px);
+}
+
+.radio input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border-radius: var(--radius-circle);
+  border: 2px solid var(--clr-violet);
+  appearance: none;
+  background: #fff;
+  box-shadow: 0 2px 0 rgba(43, 16, 54, 0.3);
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.radio input[type="radio"]:checked {
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-border);
+}
+
+.radio input[type="radio"]:checked::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: #2b0f33;
+  border-radius: var(--radius-circle);
+}
+
+.radio:has(input[type="radio"]:checked) {
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-border);
+  color: #2b0f33;
+  font-weight: 600;
+  box-shadow: 0 2px 0 var(--btn-primary-shadow);
+}
+
+/* Селекты */
+.select {
+  width: 100%;
+  padding: 9px 11px;
+  border-radius: var(--radius-md);
+  border: var(--border-soft) solid var(--clr-violet-soft);
+  background: #fffdfd;
+  outline: none;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--clr-text-main);
+  cursor: pointer;
+}
+
+.select:focus {
+  border-color: var(--clr-violet);
+  box-shadow: 0 0 0 2px rgba(180, 109, 255, 0.25);
+  background: #ffffff;
+}
+
+/* Кнопки как отдельные классы (для совместимости с HTML) */
+.btn-primary {
+  font-family: var(--font-ui);
+  font-size: var(--btn-font-size);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 11px 20px;
+  border-radius: var(--radius-md);
+  border: var(--border-soft) solid var(--btn-primary-border);
+  background: var(--btn-primary-bg);
+  color: #2b0f33;
+  box-shadow: 0 3px 0 var(--btn-primary-shadow);
+  cursor: pointer;
+  transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.1s ease;
+}
+
+.btn-primary:hover {
+  background: var(--btn-primary-bg-hover);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(43, 16, 54, 0.4);
+}
+
+.btn-secondary {
+  font-family: var(--font-ui);
+  font-size: var(--btn-font-size);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 11px 20px;
+  border-radius: var(--radius-md);
+  border: var(--border-soft) solid var(--btn-secondary-border);
+  background: var(--btn-secondary-bg);
+  color: var(--clr-text-main);
+  box-shadow: 0 3px 0 var(--btn-secondary-shadow);
+  cursor: pointer;
+  transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.1s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--btn-secondary-bg-hover);
+}
+
+.btn-secondary:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(43, 16, 54, 0.4);
+}
+
+.btn-danger {
+  font-family: var(--font-ui);
+  font-size: var(--btn-font-size);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 11px 20px;
+  border-radius: var(--radius-md);
+  border: var(--border-soft) solid var(--btn-danger-border);
+  background: var(--btn-danger-bg);
+  color: #4a0b27;
+  box-shadow: 0 3px 0 var(--btn-danger-shadow);
+  cursor: pointer;
+  transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.1s ease;
+}
+
+.btn-danger:hover {
+  background: var(--btn-danger-bg-hover);
+}
+
+.btn-danger:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(43, 16, 54, 0.4);
+}
+
+/* Заголовок экрана "Сегодня" */
+.today-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.today-header .field-label {
+  margin-bottom: 0;
+}
+
+/* Фильтры (чипы) */
+.filter-line {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+  font-size: 10px;
+  color: var(--clr-text-soft);
+}
+
+.chip {
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  border: var(--border-soft) solid var(--clr-violet-soft);
+  background: #fff9ff;
+  font-family: var(--font-ui);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--clr-text-main);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.chip:hover {
+  background: var(--clr-surface-2);
+  border-color: var(--clr-violet);
+  transform: translateY(-1px);
+}
+
+.chip--active {
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-border);
+  color: #2b0f33;
+  box-shadow: 0 2px 0 var(--btn-primary-shadow);
+}
+
+.chip--active:hover {
+  background: var(--btn-primary-bg-hover);
+}
+
+/* Форма авторизации */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.auth-form .field-label {
+  margin-bottom: var(--space-1);
+}
+
+/* Мета информация в модалке */
+.modal__meta {
+  margin-bottom: var(--space-3);
+  font-size: 11px;
+  color: var(--clr-text-soft);
+  line-height: 1.5;
+}
+
+/* Улучшенные анимации для модалок */
+.modal-backdrop {
+  animation: fadeIn 0.2s ease;
+}
+
+.modal {
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Улучшенные hover эффекты для элементов списка */
+.task-item {
+  transition: all 0.15s ease;
+}
+
+.task-item:hover {
+  transform: translateX(4px);
+  border-color: var(--clr-violet);
+  box-shadow: 0 2px 8px rgba(180, 109, 255, 0.2);
+}
+
+.project-item {
+  transition: all 0.15s ease;
+}
+
+.project-item:hover {
+  transform: translateX(4px);
+  border-color: var(--clr-violet);
+  box-shadow: 0 2px 8px rgba(180, 109, 255, 0.2);
+}
+
+/* Улучшенные стили для выполненных задач */
+.task-item--done {
+  opacity: 0.7;
+  background: #f5f5f5;
+}
+
+.task-item--done .task-item__title {
+  text-decoration: line-through;
+  color: var(--clr-text-muted);
+}
+
+/* Улучшенные стили для навигации */
+.nav-btn {
+  transition: all 0.15s ease;
+}
+
+.nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 rgba(43, 16, 54, 0.45);
+}
+
+/* Улучшенные стили для панелей */
+.panel {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Улучшенные стили для тегов */
+.tag {
+  transition: all 0.12s ease;
+}
+
+.tag:hover {
+  transform: scale(1.05);
+  border-color: var(--clr-violet);
+  background: var(--clr-surface-2);
+}
+
+/* Улучшенные стили для пустых состояний */
+.empty-hint {
+  animation: fadeIn 0.4s ease;
+}
+
 /* =============== ПРОЧЕЕ / ХЕЛПЕРЫ =============== */
 
 .text-muted {
@@ -759,6 +1234,12 @@ textarea {
   border: var(--border-soft) solid var(--clr-violet-soft);
   background: #fff9ff;
   font-size: 9px;
+  transition: all 0.12s ease;
+}
+
+.badge:hover {
+  transform: scale(1.05);
+  border-color: var(--clr-violet);
 }
 
 .empty-state {
@@ -770,6 +1251,92 @@ textarea {
   text-align: center;
   font-size: 11px;
   color: var(--clr-text-soft);
+}
+
+/* Улучшенная типографика */
+h1, h2, h3, h4 {
+  line-height: 1.2;
+}
+
+p {
+  line-height: 1.6;
+}
+
+/* Плавная прокрутка */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Кастомный скроллбар */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--clr-surface-2);
+  border-radius: var(--radius-pill);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--clr-violet-soft);
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--clr-surface-2);
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--clr-violet);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--clr-violet-soft) var(--clr-surface-2);
+}
+
+/* Улучшенные фокус-стили для доступности */
+*:focus-visible {
+  outline: 2px solid var(--clr-violet);
+  outline-offset: 2px;
+}
+
+/* Улучшенные стили для инпутов при ошибке */
+.input-text:invalid,
+.input-date:invalid,
+.select:invalid {
+  border-color: var(--clr-danger);
+}
+
+/* Улучшенные стили для модального backdrop */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Улучшенные стили для кнопки закрытия модалки */
+.modal__close:hover {
+  transform: rotate(90deg) scale(1.1);
+  background: var(--btn-danger-bg);
+  border-color: var(--btn-danger-border);
+}
+
+/* Улучшенные стили для auth tabs */
+.auth-tab {
+  transition: all 0.15s ease;
+}
+
+.auth-tab:hover {
+  background: rgba(255, 138, 240, 0.3);
+}
+
+/* Улучшенные стили для пустых состояний с иконками */
+.empty-hint::before {
+  content: "✨";
+  display: block;
+  font-size: 24px;
+  margin-bottom: var(--space-2);
+  opacity: 0.6;
 }
 
 @media (max-width: 768px) {
@@ -791,5 +1358,27 @@ textarea {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-2);
+  }
+
+  .today-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .filter-line {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .modal {
+    max-width: 95%;
+    margin: var(--space-4);
+  }
+
+  .task-item:hover,
+  .project-item:hover {
+    transform: none;
   }
 }

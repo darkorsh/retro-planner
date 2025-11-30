@@ -395,9 +395,11 @@ function openAuthModal(mode = "login") {
 }
 
 function closeAuthModal() {
-  if (authModalEl) {
-    authModalEl.classList.add("hidden");
-  }
+  if (!authModalEl) return;
+  authModalEl.classList.add("hidden");
+
+  if (authErrorEl) authErrorEl.style.display = "none";
+  if (authPasswordEl) authPasswordEl.value = "";
 }
 
 function updateAuthModeUI() {

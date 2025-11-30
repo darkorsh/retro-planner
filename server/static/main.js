@@ -349,6 +349,14 @@ function renderUserPanel() {
   userPanelEl.appendChild(btnLogout);
 }
 
+function requireAuth() {
+  if (!authState.token) {
+    openAuthModal("login");
+    return false;
+  }
+  return true;
+}
+
 async function handleLogout() {
   try {
     await fetch(`${API_BASE}/auth/logout`, {
@@ -420,6 +428,9 @@ function updateAuthModeUI() {
 function createTask({ text, category, project, date }) {
   const cleanText = (text || "").trim();
   if (!cleanText) return;
+
+  // без авторизации не лезем в /tasks, а сразу открываем модалку логина
+  if (!requireAuth()) return;
 
   apiCreateTask({
     text: cleanText,

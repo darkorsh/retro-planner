@@ -99,7 +99,7 @@ function authHeaders() {
   };
 }
 
-// универсальная обёртка над fetch: если 401 -> сбрасываем авторизацию
+// универсальная обёртка над fetch
 async function apiFetch(url, options = {}) {
   const opts = {
     ...options,
@@ -112,13 +112,13 @@ async function apiFetch(url, options = {}) {
   const res = await fetch(url, opts);
 
   if (res.status === 401) {
-    // токен протух / невалидный
     setAuth(null, null);
     throw new Error("UNAUTHORIZED");
   }
 
   return res;
 }
+
 
 async function apiLoadTasks() {
   try {
@@ -361,9 +361,7 @@ async function handleLogout() {
   try {
     await fetch(`${API_BASE}/auth/logout`, {
       method: "POST",
-      headers: {
-        ...authHeaders()
-      }
+      headers: authHeaders()
     });
   } catch (e) {
     // и ладно
@@ -373,6 +371,7 @@ async function handleLogout() {
     renderAll();
   }
 }
+
 
 // --- модалка логина / регистрации ---
 

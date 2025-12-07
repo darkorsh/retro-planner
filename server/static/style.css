@@ -1,9 +1,12 @@
 /* =============== БАЗА / ПЕРЕМЕННЫЕ =============== */
 
 :root {
-  /* Шрифты - пиксельный для UI, обычный для текста */
-  --font-ui: "Press Start 2P", monospace;
-  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+ /* интерфейсный шрифт (кнопки, заголовки, навбар) */
+  --font-ui: "JetBrains Mono", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* основной текст тоже можно на JetBrains Mono,
+     либо оставить что-то более «плавное», если хочешь контраст */
+  --font-body: "JetBrains Mono", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
   /* Цветовая гамма (точь в точь как на скрине) */
   /* Фон */
@@ -80,11 +83,11 @@
   --btn-tertiary-shadow: #7a2fb8;
 
   /* Размеры шрифтов - система из нескольких кеглей */
-  --font-size-xs: 8px;    /* мелкие элементы */
-  --font-size-sm: 10px;   /* подписи, мета */
-  --font-size-base: 13px; /* основной текст */
-  --font-size-lg: 14px;   /* заголовки элементов */
-  --font-size-xl: 12px;   /* заголовки UI (Press Start 2P) */
+  --font-size-xs: 11px;    /* мелкие элементы */
+  --font-size-sm: 13px;   /* подписи, мета */
+  --font-size-base: 16px; /* основной текст */
+  --font-size-lg: 18px;   /* заголовки элементов */
+  --font-size-xl: 22px;   /* заголовки UI (Press Start 2P) */
 
   /* Danger кнопки */
   --btn-danger-bg: #ffb0cf;
@@ -211,7 +214,7 @@ textarea {
 
 /* =============== КНОПКИ =============== */
 
-/* Базовый стиль для всех кнопок - ретро стиль */
+/* Базовый стиль для всех кнопок - «неопиксель» */
 .btn,
 button[class*="btn"],
 .btn-primary,
@@ -221,28 +224,32 @@ button[class*="btn"],
 .topbar__user-btn,
 .chip,
 .auth-tab {
-  font-family: var(--font-ui);
-  font-size: var(--font-size-xs);
+  font-family: var(--font-ui);          /* JetBrains Mono */
+  font-size: var(--font-size-sm);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-base);
-  border: var(--border-normal) solid;
-  background: var(--btn-secondary-bg);
-  border-color: var(--btn-secondary-border);
-  color: var(--clr-text-main);
-  box-shadow: var(--shadow-button);
+  letter-spacing: 0.08em;
+
+  padding: 0.6rem 1.6rem;
+  border-radius: 6px;                   /* можно вынести в переменную, если захочешь */
+  border-width: 2px;
+  border-style: solid;
+  border-color: #5a3e99;               /* тёмный фиолетовый бордер */
+
+  background: var(--btn-secondary-bg);  /* твой бирюзовый */
+  box-shadow: 0 4px 0 #6f4ea8;          /* «кирпичная» тень */
+
   cursor: pointer;
-  transition: none;
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 40px;
+  min-width: 40px;
   user-select: none;
+  transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.15s ease;
 }
 
-/* Активное состояние - нажатие */
+/* нажатие – кнопка «проваливается» */
 .btn:active,
 button[class*="btn"]:active,
 .btn-primary:active,
@@ -252,9 +259,10 @@ button[class*="btn"]:active,
 .topbar__user-btn:active,
 .chip:active,
 .auth-tab:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 rgba(42, 18, 64, 0.4);
+  transform: translateY(4px);
+  box-shadow: 0 0 0 #6f4ea8;
 }
+
 
 /* Hover - только цвет фона */
 .btn:hover,
@@ -338,7 +346,7 @@ button[class*="btn"]:hover,
 
 /* Навигационные кнопки */
 .nav-btn {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-base);
 }
 
 .nav-btn--active {
@@ -463,7 +471,8 @@ button[class*="btn"]:hover,
 .input-select,
 .select,
 .task-body,
-textarea {
+textarea,
+.project-add__date {
   width: 100%;
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-base);
@@ -492,7 +501,8 @@ textarea {
 .input-select:focus,
 .select:focus,
 .task-body:focus,
-textarea:focus {
+textarea:focus,
+.project-add__date:focus {
   border-color: var(--clr-violet);
   background: #ffffff;
 }
@@ -651,21 +661,6 @@ textarea,
   color: #2b0f33;
   font-weight: 600;
   box-shadow: 0 2px 0 var(--btn-primary-shadow);
-}
-
-/* Radio для категорий с акцентными цветами */
-.radio.radio-work:has(input[type="radio"]:checked) {
-  background: var(--clr-accent-cyan);
-  border-color: #7ad4e6;
-  color: #1a4a52;
-  box-shadow: 0 2px 0 rgba(26, 74, 82, 0.3);
-}
-
-.radio.radio-personal:has(input[type="radio"]:checked) {
-  background: var(--clr-accent-yellow);
-  border-color: #e6d977;
-  color: #5a4d1a;
-  box-shadow: 0 2px 0 rgba(90, 77, 26, 0.3);
 }
 
 /* Группы действий */
@@ -882,6 +877,10 @@ textarea,
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
 }
 
 .project-item {
@@ -987,10 +986,13 @@ textarea,
   align-items: center;
   justify-content: center;
   padding: 0;
-  font-family: var(--font-ui);
-  font-size: var(--font-size-base);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+ /* ИКОНКИ, а не текст: */
+  font-family: var(--font-body); /* обычный шрифт, одинаковая толщина */
+  font-size: 18px;               /* укрупняем сам значок */
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1;
   border-radius: var(--radius-base);
   border: var(--border-normal) solid;
   background: var(--btn-secondary-bg);
@@ -1195,7 +1197,7 @@ textarea,
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-5);
 }
 
 .auth-form .field-label {

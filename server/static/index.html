@@ -53,11 +53,11 @@
           <!-- Категория -->
           <div class="field-group">
             <span class="field-label">Категория:</span>
-            <label class="radio">
+            <label class="radio radio-work">
               <input id="category-work" type="radio" name="task-type" value="work" checked />
               <span>Рабочее</span>
             </label>
-            <label class="radio">
+            <label class="radio radio-personal">
               <input id="category-personal" type="radio" name="task-type" value="personal" />
               <span>Личное</span>
             </label>
@@ -157,18 +157,20 @@
     <h2 class="modal__title" id="taskModalTitle"></h2>
     <div class="modal__meta" id="taskModalMeta"></div>
 
-    <label class="field-label" for="taskModalTextarea">ТЕКСТ ЗАДАЧИ:</label>
-    <textarea id="taskModalTextarea" class="modal__body"></textarea>
+    <div class="modal__body">
+      <label class="field-label" for="taskModalTextarea">ТЕКСТ ЗАДАЧИ:</label>
+      <textarea id="taskModalTextarea" class="task-body"></textarea>
 
-    <label class="field-label" for="taskModalProjectSelect">ПРОЕКТ:</label>
-    <select id="taskModalProjectSelect" class="select">
-      <option value="">— без проекта —</option>
-    </select>
+      <label class="field-label" for="taskModalProjectSelect">ПРОЕКТ:</label>
+      <select id="taskModalProjectSelect" class="select">
+        <option value="">— без проекта —</option>
+      </select>
 
-    <label class="field-label" for="taskModalDate">КОГДА ДЕЛАТЬ:</label>
-    <input type="date" id="taskModalDate" class="input-date" />
+      <label class="field-label" for="taskModalDate">КОГДА ДЕЛАТЬ:</label>
+      <input type="date" id="taskModalDate" class="input-date" />
+    </div>
 
-    <div style="margin-top: 10px; display: flex; justify-content: flex-end; gap: 8px;">
+    <div class="modal__footer">
       <button type="button" class="btn-danger" id="taskModalDeleteBtn">УДАЛИТЬ</button>
       <button type="button" class="btn-secondary" id="taskModalCancelBtn">ОТМЕНА</button>
       <button type="button" class="btn-primary" id="taskModalSaveBtn">СОХРАНИТЬ</button>
@@ -204,7 +206,7 @@
 
       <div class="auth-error subtle" id="authError" style="display:none;"></div>
 
-      <div style="margin-top: 10px; display: flex; justify-content: flex-end; gap: 8px;">
+      <div class="form-actions">
         <button type="button" class="btn-secondary" id="authCancelBtn">Отмена</button>
         <button type="button" class="btn-primary" id="authSubmitBtn">Продолжить</button>
       </div>

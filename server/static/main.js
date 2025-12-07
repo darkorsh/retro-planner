@@ -321,6 +321,7 @@ function renderUserPanel() {
 
   userPanelEl.innerHTML = "";
 
+  // Если не авторизован – показываем кнопку "ВОЙТИ"
   if (!authState.user) {
     const btn = document.createElement("button");
     btn.type = "button";
@@ -331,23 +332,23 @@ function renderUserPanel() {
     return;
   }
 
+  // Имя пользователя
   const nameSpan = document.createElement("span");
   nameSpan.className = "topbar__user-name";
   nameSpan.textContent = authState.user.name || authState.user.email;
 
-  const emailSpan = document.createElement("span");
-  emailSpan.textContent = `(${authState.user.email})`;
+  // Кнопка "ВЫЙТИ"
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "topbar__user-btn";
+  btn.textContent = "ВЫЙТИ";
+  btn.addEventListener("click", handleLogout);
 
-  const btnLogout = document.createElement("button");
-  btnLogout.type = "button";
-  btnLogout.className = "topbar__user-btn";
-  btnLogout.textContent = "ВЫЙТИ";
-  btnLogout.addEventListener("click", handleLogout);
-
+  // Добавляем только имя и кнопку
   userPanelEl.appendChild(nameSpan);
-  userPanelEl.appendChild(emailSpan);
-  userPanelEl.appendChild(btnLogout);
+  userPanelEl.appendChild(btn);
 }
+
 
 function requireAuth() {
   if (!authState.token) {

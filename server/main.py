@@ -225,6 +225,10 @@ TASKS_FILE = Path(__file__).parent / "tasks.json"
 
 
 def migrate_from_file_if_needed():
+    # работаем только с локальной SQLite, в Postgres миграция не нужна
+    if not str(DATABASE_URL).startswith("sqlite"):
+        return
+    
     """
     Разовая миграция из tasks.json в SQLite и создание демо-пользователя.
     Если tasks.db уже есть – ничего не делаем.
